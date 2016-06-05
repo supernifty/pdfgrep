@@ -5,6 +5,8 @@ pdfgrep - grep for pdf files
 Dependency:
 * pdftotext (for osx can get from xpdf distribution; linux it's in poppler-util) 
 
+Usage:
+* pdfgrep regex pdf_file(s)
 '''
 
 import argparse
