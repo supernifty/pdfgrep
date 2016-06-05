@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+'''
+pdfgrep - grep for pdf files
+
+Dependency:
+* pdftotext (for osx can get from xpdf distribution; linux it's in poppler-util) 
+
+'''
+
+import argparse
+import re
+import sys
+import subprocess
+
+def pdfgrep(regex, files, ignore_case, filename_only, out, err):
+    '''
+        performs the grep by first getting text of the pdf from external executable pdftotex
+    '''
+    flags = 0
+    if ignore_case:
+        flags = re.I 
+    for filename in files:
+        #err.write('searching {0} for {1}...\n'.format(filename, regex))
+        process = subprocess.Popen(["pdftotext", filename, "-"], stdout=subprocess.PIPE)
+        (pdftotext_output, pdftotext_error) = process.communicate()
+        process.wait()
+        lines = pdftotext_output.split('\n')
+        for idx, line in enumerate(lines):
+          if re.search(regex, line, flags) is not None:
+              if filename_only:
+                  out.write("{0}\n".format(filename))
+                  break
+              else:
+                  out.write("{0}:{1}: {2}\n".format(filename, idx+1, line))
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='grep pdf')
+    parser.add_argument('-i', action='store_true', help='ignore case')
+    parser.add_argument('-l', action='store_true', help='only print filename')
+    parser.add_argument('regex', help='regular expression to search')
+    parser.add_argument('files', nargs='+', help='pdf files')
+    args = parser.parse_args()
+
+    pdfgrep(args.regex, args.files, args.i, args.l, sys.stdout, sys.stderr)
