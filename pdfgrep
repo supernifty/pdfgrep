@@ -26,7 +26,7 @@ def pdfgrep(regex, files, ignore_case, filename_only, out, err):
         process = subprocess.Popen(["pdftotext", filename, "-"], stdout=subprocess.PIPE)
         (pdftotext_output, pdftotext_error) = process.communicate()
         process.wait()
-        lines = pdftotext_output.split('\n')
+        lines = pdftotext_output.decode("ascii", "ignore").split('\n')
         for idx, line in enumerate(lines):
           if re.search(regex, line, flags) is not None:
               if filename_only:
